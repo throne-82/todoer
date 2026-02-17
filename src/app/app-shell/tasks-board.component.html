@@ -4,36 +4,42 @@
       {{ boardTitle() }}
     </p>
 
-    <div class="mt-4 flex flex-col gap-3 sm:flex-row">
+    <form class="mt-4 flex flex-col gap-3 sm:flex-row" (ngSubmit)="createTask()">
       <input
         type="text"
         [ngModel]="newTaskTitle()"
         (ngModelChange)="newTaskTitle.set($event)"
-        (keyup.enter)="createTask()"
+        name="taskTitle"
         placeholder="Adicionar tarefa"
         class="h-11 flex-1 rounded-xl border border-[var(--border-color)] bg-[var(--surface)] px-3 text-sm outline-none focus:border-sky-400"
       />
 
-      @if (!selectedListId()) {
+      @if (!selectedListId() && lists().length > 0) {
         <select
           [ngModel]="createListId()"
           (ngModelChange)="createListId.set($event)"
+          name="taskList"
           class="h-11 min-w-40 rounded-xl border border-[var(--border-color)] bg-[var(--surface)] px-3 text-sm outline-none"
         >
           @for (list of lists(); track list.id) {
             <option [value]="list.id">{{ list.name }}</option>
           }
         </select>
+      } @else if (!selectedListId()) {
+        <div
+          class="h-11 min-w-40 rounded-xl border border-[var(--border-color)] bg-[var(--surface)] px-3 text-sm leading-[2.75rem] text-[var(--text-muted)]"
+        >
+          Inbox auto
+        </div>
       }
 
       <button
-        type="button"
-        (click)="createTask()"
+        type="submit"
         class="h-11 rounded-xl bg-sky-500 px-5 text-sm font-medium text-white transition hover:bg-sky-600"
       >
         Add
       </button>
-    </div>
+    </form>
 
     @if (addError()) {
       <p class="mt-2 text-sm text-red-500">{{ addError() }}</p>

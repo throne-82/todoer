@@ -5,9 +5,11 @@
     <button
       type="button"
       (click)="themeService.toggleTheme()"
-      class="rounded-lg border border-[var(--border-color)] px-3 py-1.5 transition hover:bg-[var(--hover)]"
+      class="rounded-lg border border-[var(--border-color)] px-3 py-1.5 text-lg leading-none transition hover:bg-[var(--hover)]"
+      [attr.aria-label]="themeService.isDark() ? 'Ativar tema claro' : 'Ativar tema escuro'"
+      [title]="themeService.isDark() ? 'Tema claro' : 'Tema escuro'"
     >
-      {{ themeService.isDark() ? 'Light' : 'Dark' }}
+      {{ themeService.isDark() ? '☀' : '🌙' }}
     </button>
 
     <span class="hidden sm:inline">{{ userLabel() }}</span>

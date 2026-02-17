@@ -37,13 +37,18 @@ export class ListsSidebarComponent {
   }
 
   async onSave(payload: { id?: string; name: string; color: string }): Promise<void> {
-    if (payload.id) {
-      await this.listsService.updateList(payload.id, payload.name, payload.color);
-    } else {
-      await this.listsService.createList(payload.name, payload.color);
-    }
+    try {
+      if (payload.id) {
+        await this.listsService.updateList(payload.id, payload.name, payload.color);
+      } else {
+        await this.listsService.createList(payload.name, payload.color);
+      }
 
-    this.closeModal();
+      this.closeModal();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Erro ao salvar lista.';
+      window.alert(message);
+    }
   }
 
   async deleteList(list: TodoList): Promise<void> {
@@ -55,7 +60,13 @@ export class ListsSidebarComponent {
       return;
     }
 
-    await this.listsService.deleteList(list.id);
+    try {
+      await this.listsService.deleteList(list.id);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Erro ao excluir lista.';
+      window.alert(message);
+      return;
+    }
 
     if (this.selectedListId() === list.id) {
       this.selectList.emit(null);

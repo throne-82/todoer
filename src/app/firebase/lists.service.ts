@@ -5,7 +5,6 @@ import {
   doc,
   getDocs,
   onSnapshot,
-  orderBy,
   query,
   serverTimestamp,
   updateDoc,
@@ -23,6 +22,7 @@ import { firestoreDb } from './firebase.client';
 export class ListsService {
   private readonly firestore = firestoreDb;
   private readonly authService = inject(AuthService);
+  private permissionErrorShown = false;
 
   getLists(): Observable<TodoList[]> {
     return this.authService.user$.pipe(
@@ -32,20 +32,36 @@ export class ListsService {
         }
 
         const ref = collection(this.firestore, 'lists');
-        const listsQuery = query(ref, where('userId', '==', user.uid), orderBy('updatedAt', 'desc'));
+        const listsQuery = query(ref, where('userId', '==', user.uid));
 
         return new Observable<TodoList[]>((subscriber) => {
           const unsubscribe = onSnapshot(
             listsQuery,
             (snapshot) => {
-              subscriber.next(
-                snapshot.docs.map((item) => ({
+              const lists = snapshot.docs
+                .map((item) => ({
                   id: item.id,
                   ...(item.data() as Omit<TodoList, 'id'>)
                 }))
-              );
+                .sort((a, b) => {
+                  const aTime = a.updatedAt?.toMillis() ?? a.createdAt?.toMillis() ?? 0;
+                  const bTime = b.updatedAt?.toMillis() ?? b.createdAt?.toMillis() ?? 0;
+                  return bTime - aTime;
+                });
+
+              subscriber.next(lists);
             },
-            (error) => subscriber.error(error)
+            (error) => {
+              console.error('Firestore lists listener error:', error);
+              const code = (error as { code?: string })?.code;
+              if (code === 'permission-denied' && !this.permissionErrorShown) {
+                this.permissionErrorShown = true;
+                window.alert(
+                  'Firestore: Missing or insufficient permissions. Verifique login, rules e deploy.'
+                );
+              }
+              subscriber.next([]);
+            }
           );
 
           return () => unsubscribe();
@@ -54,17 +70,19 @@ export class ListsService {
     );
   }
 
-  async createList(name: string, color: string): Promise<void> {
+  async createList(name: string, color: string): Promise<string> {
     const uid = this.authService.getCurrentUidOrThrow();
     const ref = collection(this.firestore, 'lists');
 
-    await addDoc(ref, {
+    const created = await addDoc(ref, {
       userId: uid,
       name: name.trim(),
       color,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp()
     });
+
+    return created.id;
   }
 
   async updateList(listId: string, name: string, color: string): Promise<void> {

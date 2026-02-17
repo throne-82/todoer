@@ -5,7 +5,6 @@ import {
   deleteDoc,
   doc,
   onSnapshot,
-  orderBy,
   query,
   serverTimestamp,
   updateDoc,
@@ -22,6 +21,7 @@ import { firestoreDb } from './firebase.client';
 export class TasksService {
   private readonly firestore = firestoreDb;
   private readonly authService = inject(AuthService);
+  private permissionErrorShown = false;
 
   getTasks(selectedListId: string | null): Observable<Task[]> {
     return this.authService.user$.pipe(
@@ -32,26 +32,37 @@ export class TasksService {
 
         const ref = collection(this.firestore, 'tasks');
         const tasksQuery = selectedListId
-          ? query(
-              ref,
-              where('userId', '==', user.uid),
-              where('listId', '==', selectedListId),
-              orderBy('updatedAt', 'desc')
-            )
-          : query(ref, where('userId', '==', user.uid), orderBy('updatedAt', 'desc'));
+          ? query(ref, where('userId', '==', user.uid), where('listId', '==', selectedListId))
+          : query(ref, where('userId', '==', user.uid));
 
         return new Observable<Task[]>((subscriber) => {
           const unsubscribe = onSnapshot(
             tasksQuery,
             (snapshot) => {
-              subscriber.next(
-                snapshot.docs.map((item) => ({
+              const tasks = snapshot.docs
+                .map((item) => ({
                   id: item.id,
                   ...(item.data() as Omit<Task, 'id'>)
                 }))
-              );
+                .sort((a, b) => {
+                  const aTime = a.updatedAt?.toMillis() ?? a.createdAt?.toMillis() ?? 0;
+                  const bTime = b.updatedAt?.toMillis() ?? b.createdAt?.toMillis() ?? 0;
+                  return bTime - aTime;
+                });
+
+              subscriber.next(tasks);
             },
-            (error) => subscriber.error(error)
+            (error) => {
+              console.error('Firestore tasks listener error:', error);
+              const code = (error as { code?: string })?.code;
+              if (code === 'permission-denied' && !this.permissionErrorShown) {
+                this.permissionErrorShown = true;
+                window.alert(
+                  'Firestore: Missing or insufficient permissions. Verifique login, rules e deploy.'
+                );
+              }
+              subscriber.next([]);
+            }
           );
 
           return () => unsubscribe();

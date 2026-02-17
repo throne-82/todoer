@@ -67,19 +67,25 @@ export class TasksBoardComponent {
     this.addError.set(null);
 
     const title = this.newTaskTitle().trim();
-    const listId = this.createListId();
+    let listId = this.createListId();
 
     if (!title) {
       return;
     }
 
-    if (!listId) {
-      this.addError.set('Crie uma lista antes de adicionar tarefas.');
-      return;
-    }
+    try {
+      if (!listId) {
+        listId = await this.listsService.createList('Inbox', '#38bdf8');
+        this.createListId.set(listId);
+      }
 
-    await this.tasksService.createTask(title, listId);
-    this.newTaskTitle.set('');
+      await this.tasksService.createTask(title, listId);
+      this.newTaskTitle.set('');
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'Erro ao salvar tarefa no Firestore.';
+      this.addError.set(message);
+    }
   }
 
   private sortByUpdatedAt(tasks: Task[], order: 'asc' | 'desc'): Task[] {

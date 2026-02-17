@@ -76,20 +76,22 @@ Ao deletar uma lista, o app **deleta também todas as tarefas daquela lista** (c
 2. Ative **Authentication > Email/Password**.
 3. Ative **Firestore Database** (modo production).
 4. Em **Project Settings > Your apps > Web app**, copie as credenciais.
-5. Preencha `src/environments/environment.ts` e `src/environments/environment.development.ts`:
+5. Crie `public/firebase-config.js` a partir de `public/firebase-config.example.js` e preencha:
 
 ```ts
-firebase: {
-  apiKey: '...'
-  authDomain: '...'
-  projectId: '...'
-  storageBucket: '...'
-  messagingSenderId: '...'
+window.__FIREBASE_CONFIG__ = {
+  apiKey: '...',
+  authDomain: '...',
+  projectId: '...',
+  storageBucket: '...',
+  messagingSenderId: '...',
   appId: '...'
-}
+};
 ```
 
 6. Substitua `YOUR_FIREBASE_PROJECT_ID` em `.firebaserc`.
+
+`public/firebase-config.js` está no `.gitignore` para evitar leak de credenciais no GitHub.
 
 ## Regras do Firestore
 As regras estão em `firestore.rules` e restringem acesso para docs com `userId == request.auth.uid`.
