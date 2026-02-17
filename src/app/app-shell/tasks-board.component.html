@@ -55,7 +55,12 @@
 
       <div class="space-y-2">
         @for (task of wipTasks(); track task.id) {
-          <app-task-item [task]="task" />
+          <app-task-item
+            [task]="task"
+            [showListTag]="selectedListId() === null"
+            [listName]="listById()[task.listId]?.name ?? 'Sem lista'"
+            [listColor]="listById()[task.listId]?.color ?? '#64748b'"
+          />
         }
       </div>
     </section>
@@ -68,7 +73,12 @@
 
       <div class="space-y-2">
         @for (task of todoTasks(); track task.id) {
-          <app-task-item [task]="task" />
+          <app-task-item
+            [task]="task"
+            [showListTag]="selectedListId() === null"
+            [listName]="listById()[task.listId]?.name ?? 'Sem lista'"
+            [listColor]="listById()[task.listId]?.color ?? '#64748b'"
+          />
         }
       </div>
     </section>
@@ -81,7 +91,12 @@
 
       <div class="space-y-2">
         @for (task of doneTasks(); track task.id) {
-          <app-task-item [task]="task" />
+          <app-task-item
+            [task]="task"
+            [showListTag]="selectedListId() === null"
+            [listName]="listById()[task.listId]?.name ?? 'Sem lista'"
+            [listColor]="listById()[task.listId]?.color ?? '#64748b'"
+          />
         }
       </div>
     </section>

@@ -16,6 +16,9 @@ export interface Task {
   userId: string;
   listId: string;
   title: string;
+  description?: string;
+  dueTime?: string;
+  isImportant?: boolean;
   status: TaskStatus;
   createdAt?: Timestamp;
   updatedAt?: Timestamp;

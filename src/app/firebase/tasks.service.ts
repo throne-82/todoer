@@ -79,6 +79,9 @@ export class TasksService {
       userId: uid,
       listId,
       title: title.trim(),
+      description: '',
+      dueTime: '',
+      isImportant: false,
       status: 'todo' as TaskStatus,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp()
@@ -106,5 +109,18 @@ export class TasksService {
 
   async deleteTask(taskId: string): Promise<void> {
     await deleteDoc(doc(this.firestore, 'tasks', taskId));
+  }
+
+  async updateTaskDetails(
+    taskId: string,
+    payload: { description: string; dueTime: string; isImportant: boolean }
+  ): Promise<void> {
+    const ref = doc(this.firestore, 'tasks', taskId);
+    await updateDoc(ref, {
+      description: payload.description.trim(),
+      dueTime: payload.dueTime,
+      isImportant: payload.isImportant,
+      updatedAt: serverTimestamp()
+    });
   }
 }

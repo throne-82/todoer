@@ -41,6 +41,14 @@ export class TasksBoardComponent {
     const currentList = this.lists().find((item) => item.id === listId);
     return (currentList?.name ?? 'THRONE82 TODO').toUpperCase();
   });
+  readonly listById = computed(() => {
+    const map: Record<string, TodoList> = {};
+    for (const list of this.lists()) {
+      map[list.id] = list;
+    }
+
+    return map;
+  });
 
   readonly wipTasks = computed(() => this.sortByUpdatedAt(this.tasks().filter((task) => task.status === 'wip'), 'desc'));
   readonly todoTasks = computed(() => this.sortByUpdatedAt(this.tasks().filter((task) => task.status === 'todo'), 'desc'));
