@@ -1,0 +1,42 @@
+<section class="login-page">
+  <div class="login-card">
+    <div class="login-check">✓</div>
+
+    <h1 class="login-title">Bem-vindo de volta</h1>
+    <p class="login-subtitle">Entre em sua conta para continuar</p>
+
+    <label class="login-label" for="email">Email</label>
+    <input
+      id="email"
+      type="email"
+      [ngModel]="email()"
+      (ngModelChange)="email.set($event)"
+      autocomplete="email"
+      class="login-input"
+    />
+
+    <label class="login-label" for="password">Senha</label>
+    <input
+      id="password"
+      type="password"
+      [ngModel]="password()"
+      (ngModelChange)="password.set($event)"
+      (keyup.enter)="login()"
+      autocomplete="current-password"
+      placeholder="Digite sua senha"
+      class="login-input"
+    />
+
+    <button type="button" (click)="login()" [disabled]="loading()" class="login-button">
+      {{ loading() ? 'Entrando...' : 'Entrar' }}
+    </button>
+
+    <p class="login-note">
+      Acesso permitido apenas para <strong>throneeight2@gmail.com</strong>
+    </p>
+
+    @if (error()) {
+      <p class="login-error">{{ error() }}</p>
+    }
+  </div>
+</section>

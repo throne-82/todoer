@@ -1,0 +1,66 @@
+<aside class="flex h-full flex-col border-r border-[var(--border-color)] bg-[var(--sidebar)] p-4">
+  <button
+    type="button"
+    (click)="selectList.emit(null)"
+    class="flex items-center gap-3 rounded-xl px-3 py-3 text-left transition"
+    [class.selected-list]="selectedListId() === null"
+  >
+    <span class="h-3 w-3 rounded-full bg-sky-400"></span>
+    <span class="text-xl font-semibold text-[var(--text-primary)]">All Tasks</span>
+  </button>
+
+  <nav class="mt-4 space-y-1">
+    @for (list of lists(); track list.id) {
+      <div
+        class="group flex items-center gap-2 rounded-xl px-3 py-2 transition"
+        [class.selected-list]="selectedListId() === list.id"
+      >
+        <button type="button" class="flex min-w-0 flex-1 items-center gap-3 text-left" (click)="selectList.emit(list.id)">
+          <span class="h-3 w-3 rounded-full" [style.backgroundColor]="list.color"></span>
+          <span class="truncate text-[var(--text-primary)]">{{ list.name }}</span>
+        </button>
+
+        <button
+          type="button"
+          class="opacity-0 transition group-hover:opacity-100"
+          (click)="openEditModal(list)"
+          title="Editar"
+        >
+          <span class="text-xs text-[var(--text-muted)]">Edit</span>
+        </button>
+        <button
+          type="button"
+          class="opacity-0 transition group-hover:opacity-100"
+          (click)="deleteList(list)"
+          title="Excluir"
+        >
+          <span class="text-xs text-red-500">Del</span>
+        </button>
+      </div>
+    }
+  </nav>
+
+  <button
+    type="button"
+    (click)="openCreateModal()"
+    class="mt-4 inline-flex items-center gap-2 rounded-xl px-3 py-2 text-[var(--text-muted)] transition hover:bg-[var(--hover)]"
+  >
+    <span class="text-xl leading-none">+</span>
+    <span class="text-lg">Add List</span>
+  </button>
+
+  <button
+    type="button"
+    (click)="openCreateModal()"
+    class="mt-auto rounded-xl border border-[var(--border-color)] px-3 py-3 text-left text-lg text-[var(--text-muted)] transition hover:bg-[var(--hover)]"
+  >
+    + Add List
+  </button>
+</aside>
+
+<app-list-modal
+  [isOpen]="modalOpen()"
+  [editList]="editingList()"
+  (cancelled)="closeModal()"
+  (saved)="onSave($event)"
+/>

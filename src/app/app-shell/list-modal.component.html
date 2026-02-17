@@ -1,0 +1,56 @@
+@if (isOpen()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4" (click)="close()">
+    <section
+      class="w-full max-w-sm rounded-2xl border border-[var(--border-color)] bg-[var(--panel)] p-5 shadow-xl"
+      (click)="$event.stopPropagation()"
+    >
+      <h3 class="text-lg font-semibold text-[var(--text-primary)]">
+        {{ editList() ? 'Editar lista' : 'Nova lista' }}
+      </h3>
+
+      <label class="mt-4 block text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]"
+        >Nome</label
+      >
+      <input
+        type="text"
+        [ngModel]="name()"
+        (ngModelChange)="name.set($event)"
+        placeholder="Ex: Work"
+        class="mt-2 w-full rounded-lg border border-[var(--border-color)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-sky-400"
+      />
+
+      <label class="mt-4 block text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]"
+        >Cor</label
+      >
+      <div class="mt-2 flex flex-wrap gap-2">
+        @for (item of palette; track item) {
+          <button
+            type="button"
+            [style.backgroundColor]="item"
+            (click)="color.set(item)"
+            class="h-7 w-7 rounded-full border-2 transition"
+            [class.selected-color]="color() === item"
+            [class.border-transparent]="color() !== item"
+          ></button>
+        }
+      </div>
+
+      <div class="mt-6 flex items-center justify-end gap-2">
+        <button
+          type="button"
+          (click)="close()"
+          class="rounded-lg px-3 py-2 text-sm text-[var(--text-muted)] transition hover:bg-[var(--hover)]"
+        >
+          Cancelar
+        </button>
+        <button
+          type="button"
+          (click)="submit()"
+          class="rounded-lg bg-sky-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-sky-600"
+        >
+          Salvar
+        </button>
+      </div>
+    </section>
+  </div>
+}

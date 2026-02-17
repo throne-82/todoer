@@ -1,0 +1,41 @@
+<article class="group flex items-center gap-3 rounded-lg px-1 py-1">
+  <button
+    type="button"
+    class="status-icon"
+    [class]="'status-icon ' + statusClass()"
+    (click)="cycleStatus()"
+    title="Alterar status"
+  ></button>
+
+  @if (editing()) {
+    <input
+      type="text"
+      class="flex-1 rounded-md border border-[var(--border-color)] bg-[var(--surface)] px-2 py-1 text-[var(--text-primary)] outline-none focus:border-sky-400"
+      [ngModel]="draftTitle()"
+      (ngModelChange)="draftTitle.set($event)"
+      (keyup.enter)="saveEdit()"
+      (keyup.escape)="cancelEdit()"
+      (blur)="saveEdit()"
+      autofocus
+    />
+  } @else {
+    <button
+      type="button"
+      class="min-w-0 flex-1 truncate text-left text-[1.75rem] leading-[1.15]"
+      [class.done-title]="isDone()"
+      (dblclick)="beginEdit()"
+      title="Duplo clique para editar"
+    >
+      {{ task().title }}
+    </button>
+  }
+
+  <button
+    type="button"
+    class="rounded-md px-2 py-1 text-xs text-red-500 opacity-0 transition group-hover:opacity-100 hover:bg-red-500/10"
+    (click)="removeTask()"
+    title="Excluir tarefa"
+  >
+    Del
+  </button>
+</article>

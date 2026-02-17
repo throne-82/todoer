@@ -1,0 +1,83 @@
+<section class="flex h-full flex-col bg-[var(--panel)] p-4 sm:p-6 lg:p-8">
+  <header class="mb-5">
+    <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--text-muted)]">
+      {{ boardTitle() }}
+    </p>
+
+    <div class="mt-4 flex flex-col gap-3 sm:flex-row">
+      <input
+        type="text"
+        [ngModel]="newTaskTitle()"
+        (ngModelChange)="newTaskTitle.set($event)"
+        (keyup.enter)="createTask()"
+        placeholder="Adicionar tarefa"
+        class="h-11 flex-1 rounded-xl border border-[var(--border-color)] bg-[var(--surface)] px-3 text-sm outline-none focus:border-sky-400"
+      />
+
+      @if (!selectedListId()) {
+        <select
+          [ngModel]="createListId()"
+          (ngModelChange)="createListId.set($event)"
+          class="h-11 min-w-40 rounded-xl border border-[var(--border-color)] bg-[var(--surface)] px-3 text-sm outline-none"
+        >
+          @for (list of lists(); track list.id) {
+            <option [value]="list.id">{{ list.name }}</option>
+          }
+        </select>
+      }
+
+      <button
+        type="button"
+        (click)="createTask()"
+        class="h-11 rounded-xl bg-sky-500 px-5 text-sm font-medium text-white transition hover:bg-sky-600"
+      >
+        Add
+      </button>
+    </div>
+
+    @if (addError()) {
+      <p class="mt-2 text-sm text-red-500">{{ addError() }}</p>
+    }
+  </header>
+
+  <div class="space-y-7 overflow-y-auto pr-1">
+    <section>
+      <div class="mb-3 flex items-center gap-3">
+        <h2 class="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">WIP</h2>
+        <div class="h-px flex-1 bg-[var(--border-color)]"></div>
+      </div>
+
+      <div class="space-y-2">
+        @for (task of wipTasks(); track task.id) {
+          <app-task-item [task]="task" />
+        }
+      </div>
+    </section>
+
+    <section>
+      <div class="mb-3 flex items-center gap-3">
+        <h2 class="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">TODO</h2>
+        <div class="h-px flex-1 bg-[var(--border-color)]"></div>
+      </div>
+
+      <div class="space-y-2">
+        @for (task of todoTasks(); track task.id) {
+          <app-task-item [task]="task" />
+        }
+      </div>
+    </section>
+
+    <section>
+      <div class="mb-3 flex items-center gap-3">
+        <h2 class="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">DONE</h2>
+        <div class="h-px flex-1 bg-[var(--border-color)]"></div>
+      </div>
+
+      <div class="space-y-2">
+        @for (task of doneTasks(); track task.id) {
+          <app-task-item [task]="task" />
+        }
+      </div>
+    </section>
+  </div>
+</section>

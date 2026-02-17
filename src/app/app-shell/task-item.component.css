@@ -1,0 +1,29 @@
+.status-icon {
+  height: 2.25rem;
+  width: 2.25rem;
+  border-radius: 0.35rem;
+  border: 1px solid #38bdf8;
+  transition: transform 0.15s ease;
+}
+
+.status-icon:hover {
+  transform: translateY(-1px);
+}
+
+.status-todo {
+  background: transparent;
+}
+
+.status-wip {
+  background: linear-gradient(45deg, #38bdf8 50%, transparent 50%);
+}
+
+.status-done {
+  background-color: #38bdf8;
+}
+
+.done-title {
+  color: var(--text-muted);
+  text-decoration: line-through;
+  opacity: 0.6;
+}

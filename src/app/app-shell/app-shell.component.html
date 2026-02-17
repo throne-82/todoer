@@ -1,0 +1,38 @@
+<div class="min-h-screen bg-[var(--bg-base)] px-3 py-4 text-[var(--text-primary)] sm:px-6 sm:py-8">
+  <div
+    class="mx-auto flex max-w-6xl items-center justify-end gap-2 pb-3 text-xs text-[var(--text-muted)] sm:text-sm"
+  >
+    <button
+      type="button"
+      (click)="themeService.toggleTheme()"
+      class="rounded-lg border border-[var(--border-color)] px-3 py-1.5 transition hover:bg-[var(--hover)]"
+    >
+      {{ themeService.isDark() ? 'Light' : 'Dark' }}
+    </button>
+
+    <span class="hidden sm:inline">{{ userLabel() }}</span>
+
+    <button
+      type="button"
+      (click)="logout()"
+      class="rounded-lg border border-[var(--border-color)] px-3 py-1.5 transition hover:bg-[var(--hover)]"
+    >
+      Logout
+    </button>
+  </div>
+
+  <main
+    class="mx-auto flex h-[calc(100vh-5rem)] max-w-6xl flex-col overflow-hidden rounded-3xl border border-[var(--border-color)] bg-[var(--panel)] shadow-[0_24px_70px_rgba(15,23,42,0.16)] md:flex-row"
+  >
+    <div class="w-full md:w-[290px]">
+      <app-lists-sidebar
+        [selectedListId]="selectedListId()"
+        (selectList)="selectedListId.set($event)"
+      />
+    </div>
+
+    <div class="min-h-0 flex-1">
+      <app-tasks-board [selectedListId]="selectedListId()" />
+    </div>
+  </main>
+</div>
