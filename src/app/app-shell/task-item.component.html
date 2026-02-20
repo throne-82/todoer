@@ -81,6 +81,36 @@
           {{ draftImportant() ? '🚩 Importantão' : '⚐ Marcar importante' }}
         </button>
       </div>
+
+      <!-- subtasks area -->
+      <div class="subtasks">
+        <h4 class="text-sm font-semibold">Subtarefas</h4>
+        <div class="space-y-2">
+          @for (sub of subtasks(); track sub.id) {
+            <app-task-item
+              [task]="sub"
+              [showListTag]="false"
+            />
+          }
+        </div>
+
+        <form class="mt-2 flex gap-2" (ngSubmit)="createSubtask()">
+          <input
+            class="flex-1 rounded-md border border-[var(--border-color)] bg-[var(--surface)] px-2 py-1 text-[var(--text-primary)] outline-none focus:border-sky-400"
+            type="text"
+            placeholder="Adicionar subtarefa"
+            [ngModel]="newSubtaskTitle()"
+            (ngModelChange)="newSubtaskTitle.set($event)"
+            name="subtaskTitle"
+          />
+          <button
+            type="submit"
+            class="rounded-md bg-sky-500 px-3 text-white text-sm hover:bg-sky-600"
+          >
+            +
+          </button>
+        </form>
+      </div>
     </div>
   }
 </article>

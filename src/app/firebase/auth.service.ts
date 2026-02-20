@@ -12,7 +12,6 @@ import { firebaseAuth } from './firebase.client';
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly allowedEmail = 'throneeight2@gmail.com';
   private readonly auth = firebaseAuth;
 
   readonly user$ = new Observable<User | null>((subscriber) => {
@@ -28,17 +27,8 @@ export class AuthService {
 
   async loginWithEmailPassword(email: string, password: string): Promise<void> {
     const normalizedEmail = email.trim().toLowerCase();
-    if (normalizedEmail !== this.allowedEmail) {
-      throw new Error('UNAUTHORIZED_EMAIL');
-    }
-
-    const credential = await signInWithEmailAndPassword(this.auth, normalizedEmail, password);
-    const signedEmail = credential.user.email?.toLowerCase();
-
-    if (signedEmail !== this.allowedEmail) {
-      await signOut(this.auth);
-      throw new Error('UNAUTHORIZED_EMAIL');
-    }
+    // simply sign in; any account registered in Firebase Auth will work
+    await signInWithEmailAndPassword(this.auth, normalizedEmail, password);
   }
 
   async logout(): Promise<void> {
@@ -58,7 +48,11 @@ export class AuthService {
     return uid;
   }
 
+  /**
+   * In previous versions we restricted access to a single hard‑coded
+   * address.  Now every authenticated user is permitted.
+   */
   isAllowedUser(user: User | null): boolean {
-    return user?.email?.toLowerCase() === this.allowedEmail;
+    return !!user;
   }
 }

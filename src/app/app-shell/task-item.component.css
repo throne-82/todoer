@@ -123,3 +123,17 @@
 .important-btn:hover {
   background: var(--hover);
 }
+
+/* visual treatment for the subtask block inside expanded details */
+.subtasks {
+  margin-top: 1rem;
+  margin-left: 3rem; /* align with the existing details indent */
+  border-left: 2px dashed var(--border-color);
+  padding-left: 0.85rem;
+}
+
+.subtasks h4 {
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}

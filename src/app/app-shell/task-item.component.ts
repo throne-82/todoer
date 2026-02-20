@@ -1,7 +1,10 @@
-import { Component, computed, inject, input, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { switchMap, of } from 'rxjs';
 import { TasksService } from '../firebase/tasks.service';
-import { Task } from '../shared/models';
+import { ListsService } from '../firebase/lists.service';
+import { Task, TodoList } from '../shared/models';
 
 @Component({
   selector: 'app-task-item',
@@ -15,8 +18,9 @@ export class TaskItemComponent {
 
   readonly task = input.required<Task>();
   readonly showListTag = input(false);
-  readonly listName = input('Sem lista');
-  readonly listColor = input('#64748b');
+  // list name/color become reactive signals managed internally
+  readonly listName = signal('Sem lista');
+  readonly listColor = signal('#64748b');
 
   readonly editing = signal(false);
   readonly draftTitle = signal('');
@@ -24,9 +28,24 @@ export class TaskItemComponent {
   readonly draftDescription = signal('');
   readonly draftDueTime = signal('');
   readonly draftImportant = signal(false);
+  readonly newSubtaskTitle = signal('');
+
+  readonly listsService = inject(ListsService);
+  readonly lists = toSignal(this.listsService.getLists(), { initialValue: [] as TodoList[] });
 
   readonly isDone = computed(() => this.task().status === 'done');
   readonly isImportant = computed(() => this.task().isImportant === true);
+
+  constructor() {
+    // keep the tag info up‑to‑date for both root tasks and subtasks
+    effect(() => {
+      const t = this.task();
+      const lists = this.lists();
+      const list = lists.find((l) => l.id === t?.listId);
+      this.listName.set(list?.name ?? 'Sem lista');
+      this.listColor.set(list?.color ?? '#64748b');
+    });
+  }
 
   async cycleStatus(): Promise<void> {
     await this.tasksService.cycleTaskStatus(this.task());
@@ -95,6 +114,30 @@ export class TaskItemComponent {
   async toggleImportant(): Promise<void> {
     this.draftImportant.set(!this.draftImportant());
     await this.saveDetails();
+  }
+
+  // subs
+  readonly subtasks = toSignal(
+    toObservable(this.task).pipe(
+      switchMap((t) => {
+        if (!t) {
+          return of([] as Task[]);
+        }
+        return this.tasksService.getTasks(t.listId, t.id);
+      })
+    ),
+    { initialValue: [] as Task[] }
+  );
+
+  async createSubtask(): Promise<void> {
+    const title = this.newSubtaskTitle().trim();
+    if (!title) {
+      return;
+    }
+
+    const current = this.task();
+    await this.tasksService.createTask(title, current.listId, current.id);
+    this.newSubtaskTitle.set('');
   }
 
   statusClass(): string {

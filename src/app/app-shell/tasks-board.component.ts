@@ -50,9 +50,26 @@ export class TasksBoardComponent {
     return map;
   });
 
-  readonly wipTasks = computed(() => this.sortByUpdatedAt(this.tasks().filter((task) => task.status === 'wip'), 'desc'));
-  readonly todoTasks = computed(() => this.sortByUpdatedAt(this.tasks().filter((task) => task.status === 'todo'), 'desc'));
-  readonly doneTasks = computed(() => this.sortByUpdatedAt(this.tasks().filter((task) => task.status === 'done'), 'asc'));
+  // when rendering the main board we only care about top‑level tasks; subtasks
+  // will be rendered from inside `TaskItemComponent` itself.
+  readonly wipTasks = computed(() =>
+    this.sortByUpdatedAt(
+      this.tasks().filter((task) => task.status === 'wip' && !task.parentId),
+      'desc'
+    )
+  );
+  readonly todoTasks = computed(() =>
+    this.sortByUpdatedAt(
+      this.tasks().filter((task) => task.status === 'todo' && !task.parentId),
+      'desc'
+    )
+  );
+  readonly doneTasks = computed(() =>
+    this.sortByUpdatedAt(
+      this.tasks().filter((task) => task.status === 'done' && !task.parentId),
+      'asc'
+    )
+  );
 
   constructor() {
     effect(() => {
