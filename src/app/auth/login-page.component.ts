@@ -38,6 +38,7 @@ export class LoginPageComponent {
             this.error.set('Email ou senha inválidos.');
             break;
           case 'auth/invalid-api-key':
+          case 'auth/api-key-not-valid.-please-pass-a-valid-api-key.':
             this.error.set('Config Firebase inválida no deploy (apiKey).');
             break;
           case 'auth/operation-not-allowed':
